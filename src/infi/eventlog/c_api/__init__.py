@@ -13,6 +13,7 @@ DWORD = ctypes.c_ulong
 BOOL = ctypes.c_ulong
 POINTER = ctypes.POINTER
 PDWORD = POINTER(DWORD)
+PVOID = ctypes.c_void_p
 
 TRUE = 1
 FALSE = 0
@@ -170,7 +171,7 @@ class EvtRender(EventLogFunction):
                 (EVT_HANDLE, infi.cwrap.IN, "Fragment"),
                 (DWORD, infi.cwrap.IN, "Flags"),
                 (DWORD, infi.cwrap.IN, "BufferSize"),
-                (POINTER, infi.cwrap.IN, "Buffer"),
+                (PVOID, infi.cwrap.IN, "Buffer"),
                 (PDWORD, infi.cwrap.IN_OUT, "BufferUsed"),
                 (PDWORD, infi.cwrap.IN_OUT, "PropertyCount"),
                )
