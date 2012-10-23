@@ -141,21 +141,20 @@ class EvtNext(EventLogFunction):
                 (PDWORD, infi.cwrap.IN_OUT, "Returned"),
                )
 
-class EvtCreateRenderContext(EventLogFunction):
-    return_value = EVT_HANDLE
+# class EvtCreateRenderContext(EventLogFunction):
+#     return_value = EVT_HANDLE
 
-    @classmethod
-    def get_errcheck(cls):
-        return errcheck_invalid_handle()
+#     @classmethod
+#     def get_errcheck(cls):
+#         return errcheck_invalid_handle()
 
-    @classmethod
-    def get_parameters(cls):
-        return (
-                (DWORD, infi.cwrap.IN, "ValuePathsCount"),
-                (POINTER(LPWSTR), infi.cwrap.IN, "ValuePaths"),
-                (DWORD, infi.cwrap.IN, "Flags"),
-               )
-
+#     @classmethod
+#     def get_parameters(cls):
+#         return (
+#                 (DWORD, infi.cwrap.IN, "ValuePathsCount"),
+#                 (POINTER(LPWSTR), infi.cwrap.IN, "ValuePaths"),
+#                 (DWORD, infi.cwrap.IN, "Flags"),
+#                )
 
 class EvtRender(EventLogFunction):
     return_value = BOOL

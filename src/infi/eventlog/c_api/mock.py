@@ -116,10 +116,10 @@ def EvtNext(result_set, array_size, array, timeout, flags, returned):
     array._obj.value = handle
     return 1
 
-def EvtCreateRenderContext(values_path_count, values_paths, flags):
-    handle = get_new_handle()
-    open_handles[handle] = RenderContext()
-    return handle
+# def EvtCreateRenderContext(values_path_count, values_paths, flags):
+#     handle = get_new_handle()
+#     open_handles[handle] = RenderContext()
+#     return handle
 
 def EvtRender(context, fragment, flags, buffer_size, buffer, buffer_used_size, property_count):
     assert context in open_handles.keys() + [None]

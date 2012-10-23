@@ -112,13 +112,13 @@ class EventLog(object):
         finally:
             c_api.EvtClose(event_handle.value)
 
-    @contextmanager
-    def event_render_context(self, flags):
-        render_handle = c_api.EvtCreateRenderContext(0, None, flags)
-        try:
-            yield render_handle
-        finally:
-            c_api.EvtClose(render_handle)
+    # @contextmanager
+    # def event_render_context(self, flags):
+    #     render_handle = c_api.EvtCreateRenderContext(0, None, flags)
+    #     try:
+    #         yield render_handle
+    #     finally:
+    #         c_api.EvtClose(render_handle)
 
     def render_event(self, event_handle):
     	flags = EvtRenderEventXml
