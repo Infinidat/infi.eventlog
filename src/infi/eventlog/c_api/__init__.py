@@ -8,6 +8,7 @@ import infi.wioctl.errors
 HANDLE = ctypes.c_void_p
 EVT_HANDLE = HANDLE
 LPCWSTR = ctypes.c_wchar_p
+LPWSTR = ctypes.c_wchar_p
 DWORD = ctypes.c_ulong
 BOOL = ctypes.c_ulong
 POINTER = ctypes.POINTER
@@ -90,6 +91,6 @@ class EvtNextChannelPath(EventLogFunction):
 		return (
 			    (EVT_HANDLE, infi.cwrap.IN, "ChannelEnum"),
 			    (DWORD, infi.cwrap.IN, "ChannelPathBufferSize"),
-			    (LPCWSTR, infi.cwrap.IN_OUT, "ChannelPathBuffer"),
+			    (LPWSTR, infi.cwrap.IN_OUT, "ChannelPathBuffer"),
 			    (PDWORD, infi.cwrap.IN_OUT, "ChannelPathBufferUsed"),
 			   )

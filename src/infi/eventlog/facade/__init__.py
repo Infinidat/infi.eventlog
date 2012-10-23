@@ -50,7 +50,7 @@ class EventLog(object):
 			evt_handle = c_api.EvtOpenChannelEnum(session_handle, 0)
 			while True:
 				try:
-					buffer = c_api.LPCWSTR(c_api.MAX_LENGTH)
+					buffer = c_api.ctypes.create_unicode_buffer(c_api.MAX_LENGTH)
 					buffer_used = c_api.PDWORD()
 					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer, buffer_used)
 					yield buffer.value
