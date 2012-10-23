@@ -2,6 +2,7 @@
 from infi.pyutils.contexts import contextmanager
 from infi.exceptools import InfiException
 from logging import getLogger
+from xmltodict import parse
 
 logger = getLogger(__name__)
 
@@ -145,7 +146,7 @@ class EventLog(object):
                 with self.next_event_handle_context(query_handle) as event_handle:
                     if event_handle is None:
                         break
-                    yield self.render_event(event_handle)
+                    yield parse(self.render_event(event_handle))
 
 class LocalEventLog(EventLog):
     def __init__(self):
