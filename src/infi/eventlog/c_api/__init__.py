@@ -60,6 +60,10 @@ class EvtClose(EventLogFunction):
     return_value = BOOL
 
     @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_bool()
+
+    @classmethod
     def get_parameters(cls):
         return (
                 (EVT_HANDLE, infi.cwrap.IN, "Object"),
