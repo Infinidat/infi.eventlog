@@ -125,7 +125,7 @@ class EventLog(object):
         buffer_used = c_api.DWORD()
         property_count = c_api.DWORD()
         c_api.EvtRender(render_handle, event_handle, flags,
-                  buffer_size, buffer,
+                  buffer_size, c_api.ctypes.byref(buffer),
                   c_api.ctypes.byref(buffer_used),
                   c_api.ctypes.byref(property_count))
         return buffer.value
