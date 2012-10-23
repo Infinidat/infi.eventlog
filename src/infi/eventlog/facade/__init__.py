@@ -15,8 +15,12 @@ EvtOpenFilePath      = 0x2
 EvtRenderContextValues   = 0
 EvtRenderContextSystem   = 1
 EvtRenderContextUser     = 2
+EvtRenderEventValues   = 0
+EvtRenderEventXml      = 1
+EvtRenderBookmark      = 2
 
 INFINITE = 2147483647
+MAX_BUFFER_SIZE = 2**16
 
 def get_c_api_module():
     from brownie.importing import import_string
@@ -115,6 +119,17 @@ class EventLog(object):
         finally:
             c_api.EvtClose(render_handle)
 
+    def render_event(self, render_handle, event_handle, flags=EvtRenderEventXml):
+        buffer = c_api.ctypes.create_unicode_buffer(MAX_BUFFER_SIZE)
+        buffer_size = MAX_BUFFER_SIZE*c_api.ctypes.sizeof(c_api.ctypes.c_wchar)
+        buffer_used = c_api.DWORD()
+        property_count = c_api.DWORD()
+        EvtRender(render_handle, event_handle, flags,
+                  buffer_size, buffer,
+                  c_api.ctypes.byref(buffer_used),
+                  c_api.ctypes.byref(property_count))
+        return buffer.value
+                  
     def event_query(self, channel_name, query="*", reversed=False):
         """:returns: a generator for events, from oldest to newest.
         Use reserved=True to get events in reversed order (newest to oldest)
@@ -125,12 +140,14 @@ class EventLog(object):
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
         flags |= EvtQueryReverseDirection if reversed else EvtQueryForwardDirection
         with self.query_context(channel_name, query, flags) as query_handle:
-            with self.event_render_context(EvtRenderContextUser) as user_content:
-                with self.event_render_context(EvtRenderContextSystem) as system_context:
+            with self.event_render_context(EvtRenderContextSystem) as system_context:
+                with self.event_render_context(EvtRenderContextUser) as user_context:
                     while True:
                         with self.next_event_handle_context(query_handle) as event_handle:
                             if event_handle is None:
                                 break
+                            yield (self.render_event(system_context, event_handle),
+                                   self.render_event(user_context, event_handle))
 
 class LocalEventLog(EventLog):
     def __init__(self):

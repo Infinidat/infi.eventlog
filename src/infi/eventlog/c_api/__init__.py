@@ -154,3 +154,23 @@ class EvtCreateRenderContext(EventLogFunction):
                 (POINTER(LPWSTR), infi.cwrap.IN, "ValuePaths"),
                 (DWORD, infi.cwrap.IN, "Flags"),
                )
+
+
+class EvtRender(EventLogFunction):
+    return_value = BOOL
+
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_bool()
+
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "Context"),
+                (EVT_HANDLE, infi.cwrap.IN, "Fragment"),
+                (DWORD, infi.cwrap.IN, "Flags"),
+                (DWORD, infi.cwrap.IN, "BufferSize"),
+                (POINTER, infi.cwrap.IN, "Buffer"),
+                (PDWORD, infi.cwrap.IN_OUT, "BufferUsed"),
+                (PDWORD, infi.cwrap.IN_OUT, "PropertyCount"),
+               )
