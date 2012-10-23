@@ -51,8 +51,9 @@ class EventLog(object):
 			while True:
 				try:
 					buffer = c_api.ctypes.create_unicode_buffer(c_api.MAX_LENGTH)
-					buffer_used = c_api.PDWORD()
-					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer, buffer_used)
+					buffer_used = c_api.DWORD()
+					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer, 
+						                                              c_api.ctypes.byref(buffer_used))
 					yield buffer.value
 				except c_api.WindowsException, error:
 					if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
