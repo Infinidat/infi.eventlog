@@ -15,4 +15,4 @@ class FacadeTestCase(unittest.TestCase):
 
     def test_get_query_generator(self):
         eventlog = facade.LocalEventLog()
-        eventlog.event_query("System")
+        list(eventlog.event_query("System"))

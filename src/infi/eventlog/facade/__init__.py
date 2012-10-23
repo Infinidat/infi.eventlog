@@ -124,7 +124,7 @@ class EventLog(object):
         buffer_size = MAX_BUFFER_SIZE*c_api.ctypes.sizeof(c_api.ctypes.c_wchar)
         buffer_used = c_api.DWORD()
         property_count = c_api.DWORD()
-        EvtRender(render_handle, event_handle, flags,
+        c_api.EvtRender(render_handle, event_handle, flags,
                   buffer_size, buffer,
                   c_api.ctypes.byref(buffer_used),
                   c_api.ctypes.byref(property_count))
