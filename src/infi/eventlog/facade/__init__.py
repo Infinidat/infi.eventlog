@@ -53,7 +53,7 @@ class EventLog(object):
         flags |= EvtOpenChannelPath if channel_name in channels else EvtOpenFilePath
         
         with self._session.open_context() as session_handle:
-            evt_handle = c_api.EvtOpenLog(session_handle, channel_name, 0)
+            evt_handle = c_api.EvtOpenLog(session_handle, channel_name, falgs)
         try:
             yield evt_handle
         finally:
