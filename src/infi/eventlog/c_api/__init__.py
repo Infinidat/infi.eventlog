@@ -23,6 +23,13 @@ ERROR_NO_MORE_ITEMS = infi.wioctl.constants.ERROR_NO_MORE_ITEMS
 WindowsException = infi.wioctl.errors.WindowsException
 InvalidHandle = infi.wioctl.errors.InvalidHandle
 
+def errcheck_invalid_handle():
+    def errcheck(result, func, args):
+        if result in [None, infi.wioctl.constants.INVALID_HANDLE_VALUE]:
+            last_error = ctypes.GetLastError()
+            raise InvalidHandle(last_error)
+        return result
+    return errcheck
 
 class EventLogFunction(infi.cwrap.WrappedFunction):
     return_value = ctypes.c_ulong
@@ -46,7 +53,7 @@ class EvtOpenLog(EventLogFunction):
 
     @classmethod
     def get_errcheck(cls):
-        return infi.wioctl.api.errcheck_invalid_handle()
+        return errcheck_invalid_handle()
 
     @classmethod
     def get_parameters(cls):
@@ -74,7 +81,7 @@ class EvtOpenChannelEnum(EventLogFunction):
 
     @classmethod
     def get_errcheck(cls):
-        return infi.wioctl.api.errcheck_invalid_handle()
+        return errcheck_invalid_handle()
 
     @classmethod
     def get_parameters(cls):
@@ -104,7 +111,7 @@ class EvtQuery(EventLogFunction):
 
     @classmethod
     def get_errcheck(cls):
-        return infi.wioctl.api.errcheck_invalid_handle()
+        return errcheck_invalid_handle()
 
     @classmethod
     def get_parameters(cls):
