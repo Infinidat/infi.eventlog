@@ -14,25 +14,48 @@ def get_c_api_module():
 
 c_api = get_c_api_module()
 
-
 class EventLogException(InfiException):
 	pass
 
-class EventLog(object):	
-	def __init__(self, channel_name):
-		super(EventLog, self).__init__()
-		self._channel_name = channel_name
-
-	def __repr__(self):
-		try:
-			return "<Eventlog(channel_name={!r}>".format(channel_name)
-		except:
-			return super(EventLog, self).__repr__() 
-
+class Session(object):
 	@contextmanager
 	def open_context(self):
-		self._evt_handle = c_api.EvtOpenLog(None, self._channel_name, 0)
+		raise NotImplementedError()
+
+class LocalSession(Session):
+	@contextmanager
+	def open_context(self):
+		yield None
+		
+class RemoteSession(Session):
+	def __init__(self, computername, username, password, domain):
+		raise NotImplementedError()
+
+class EventLog(object):	
+	def __init__(self, session):
+		super(EventLog, self).__init__()
+		self._session =  session
+
+	@contextmanager
+	def open_channel_context(self, channel_name):
+		with self._session.open_context() as session_handle:
+			evt_handle = c_api.EvtLogOpen(session_handle, channel_name, 0)
 		try:
-			yield
+			yield evt_handle
 		finally:
-			c_api.EvtClose(self._evt_handle)
+			c_api.EvtClose(evt_handle)
+
+	def get_available_channels(self):
+		with self._session.open_context() as session_handle:
+			evt_handle = c_api.EvtOpenChannelEnum(session_handle, 0)
+			while True:
+				try:
+					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH)
+				except c_api.WindowsException, error:
+					if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
+						raise
+					break
+
+class LocalEventLog(EventLog):
+	def __init__(self):
+		super(LocalEventLog, self).__init__(LocalSession())

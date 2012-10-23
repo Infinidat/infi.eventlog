@@ -4,7 +4,6 @@ from infi.eventlog import c_api, facade
 
 class FacadeTestCase(unittest.TestCase):
 	def test_open_system(self):
-		eventlog = facade.EventLog("System")
-		with eventlog.open_context():
+		eventlog = facade.LocalEventLog()
+		with eventlog.open_channel_context("System"):
 			pass
-
