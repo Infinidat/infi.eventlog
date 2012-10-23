@@ -31,7 +31,7 @@ class EventLog(object):
 
 	@contextmanager
 	def open_context(self):
-		self._evt_handle = c_api.EvtLogOpen(None, self._channel_name, 0)
+		self._evt_handle = c_api.EvtOpenLog(None, self._channel_name, 0)
 		try:
 			yield
 		finally:

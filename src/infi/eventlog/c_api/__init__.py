@@ -24,7 +24,7 @@ class EventLogFunction(infi.cwrap.WrappedFunction):
     	return "Wevtapi.dll"
 
 
-class EvtLogOpen(EventLogFunction):
+class EvtOpenLog(EventLogFunction):
 	return_value = EVT_HANDLE
 
 	@classmethod
