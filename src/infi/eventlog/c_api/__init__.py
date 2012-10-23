@@ -45,7 +45,7 @@ class EvtOpenLog(EventLogFunction):
 
 	@classmethod
 	def get_errcheck(cls):
-		return infi.wioctl.errcheck_invalid_handle()
+		return infi.wioctl.api.errcheck_invalid_handle()
 
 	@classmethod
 	def get_parameters(cls):
@@ -69,7 +69,7 @@ class EvtOpenChannelEnum(EventLogFunction):
 
 	@classmethod
 	def get_errcheck(cls):
-		return infi.wioctl.errcheck_invalid_handle()
+		return infi.wioctl.api.errcheck_invalid_handle()
 
 	@classmethod
 	def get_parameters(cls):
@@ -83,7 +83,7 @@ class EvtNextChannelPath(EventLogFunction):
 
 	@classmethod
 	def get_errcheck(cls):
-		return infi.wioctl.errcheck_bool()
+		return infi.wioctl.api.errcheck_bool()
 
 	@classmethod
 	def get_parameters(cls):
