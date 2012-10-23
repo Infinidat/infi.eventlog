@@ -90,6 +90,6 @@ class EvtNextChannelPath(EventLogFunction):
 		return (
 			    (EVT_HANDLE, infi.cwrap.IN, "ChannelEnum"),
 			    (DWORD, infi.cwrap.IN, "ChannelPathBufferSize"),
-			    (create_unicode_buffer(MAX_LENGTH), infi.cwrap.OUT, "ChannelPathBuffer"),
+			    (LPCWSTR, infi.cwrap.IN_OUT, "ChannelPathBuffer"),
 			    (PDWORD, infi.cwrap.IN_OUT, "ChannelPathBufferUsed"),
 			   )

@@ -50,7 +50,9 @@ class EventLog(object):
 			evt_handle = c_api.EvtOpenChannelEnum(session_handle, 0)
 			while True:
 				try:
-					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH)
+					buffer = c_api.LPCWSTR(c_api.MAX_LENGTH)
+					buffer_used = c_api.PDWORD()
+					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer, buffer_used)
 					yield buffer.value
 				except c_api.WindowsException, error:
 					if error.winerror != c_api.ERROR_NO_MORE_ITEMS:

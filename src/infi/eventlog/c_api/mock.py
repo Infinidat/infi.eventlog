@@ -60,7 +60,7 @@ def EvtOpenChannelEnum(session, flags):
     handles_data[handle] = list(available_channel_names)
     return handle
 
-def EvtNextChannelPath(handle, buffer_size):
+def EvtNextChannelPath(handle, buffer_size, buffer, buffer_used_size):
     assert handle in open_handles
     value = open_handles[handle]
     assert isinstance(value, AvailableChannelsEnum)
