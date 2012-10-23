@@ -12,6 +12,9 @@ EvtQueryReverseDirection      = 0x200
 EvtQueryTolerateQueryErrors   = 0x1000 
 EvtOpenChannelPath   = 0x1
 EvtOpenFilePath      = 0x2 
+EvtRenderContextValues   = 0
+EvtRenderContextSystem   = 1
+EvtRenderContextUser     = 2
 
 INFINITE = 2147483647
 
@@ -104,6 +107,18 @@ class EventLog(object):
         finally:
             c_api.EvtClose(event_handle.value)
 
+    @contextmanager
+    def event_render_context(self):
+        flags = 0
+        flags |= EvtRenderContextSystem
+        flags |= EvtRenderContextUser
+
+        render_handle = c_api.EvtCreateRenderContext(0, None, flags)
+        try:
+            yield render_handle
+        finally:
+            c_api.EvtClose(render_handle)
+
     def event_query(self, channel_name, query="*", reversed=False):
         """:returns: a generator for events, from oldest to newest.
         Use reserved=True to get events in reversed order (newest to oldest)
@@ -114,10 +129,11 @@ class EventLog(object):
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
         flags |= EvtQueryReverseDirection if reversed else EvtQueryForwardDirection
         with self.query_context(channel_name, query, flags) as query_handle:
-            while True:
-                with self.next_event_handle_context(query_handle) as event_handle:
-                    if event_handle is None:
-                        break
+            with self.event_render_context() as render_handle:
+                while True:
+                    with self.next_event_handle_context(query_handle) as event_handle:
+                        if event_handle is None:
+                            break
 
 class LocalEventLog(EventLog):
     def __init__(self):

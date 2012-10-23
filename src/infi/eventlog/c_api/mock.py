@@ -45,6 +45,9 @@ class QueryEnum(object):
         super(QueryEnum, self).__init__()
         self.items = [Event() for i in range(10)]
 
+class RenderContext(object):
+	pass
+
 def get_new_handle():
     global max_handle_id
     handle = max_handle_id
@@ -100,3 +103,9 @@ def EvtNext(result_set, array_size, array, timeout, flags, returned):
     open_handles[handle] = event
     array._obj.value = handle
     return 1
+
+def EvtCreateRenderContext(values_path_count, values_paths, flags):
+	handle = get_new_handle()
+	open_handles[handle] = RenderContext()
+	return handle
+	
