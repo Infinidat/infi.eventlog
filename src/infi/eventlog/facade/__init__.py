@@ -45,6 +45,7 @@ class EventLog(object):
 
     @contextmanager
     def open_channel_context(self, channel_name):
+    	channel_name = unicode(channel_name)
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtOpenLog(session_handle, channel_name, 0)
         try:
@@ -69,6 +70,7 @@ class EventLog(object):
 
     @contextmanager
     def query_context(self, channel_name, query, flags):
+    	channel_name = unicode(channel_name)
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtQuery(session_handle, channel_name, query, flags)
             try:
