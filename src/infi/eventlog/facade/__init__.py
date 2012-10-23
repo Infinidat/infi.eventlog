@@ -10,6 +10,8 @@ EvtQueryFilePath              = 0x2
 EvtQueryForwardDirection      = 0x100
 EvtQueryReverseDirection      = 0x200
 EvtQueryTolerateQueryErrors   = 0x1000 
+EvtOpenChannelPath   = 0x1
+EvtOpenFilePath      = 0x2 
 
 def get_c_api_module():
     from brownie.importing import import_string
@@ -45,7 +47,11 @@ class EventLog(object):
 
     @contextmanager
     def open_channel_context(self, channel_name):
-    	channel_name = unicode(channel_name)
+        channel_name = unicode(channel_name)
+        channels = list(self.get_available_channels())
+        flags = 0
+        flags |= EvtOpenChannelPath if channel_name in channels else EvtOpenFilePath
+        
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtOpenLog(session_handle, channel_name, 0)
         try:
@@ -70,7 +76,7 @@ class EventLog(object):
 
     @contextmanager
     def query_context(self, channel_name, query, flags):
-    	channel_name = unicode(channel_name)
+        channel_name = unicode(channel_name)
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtQuery(session_handle, channel_name, query, flags)
             try:
