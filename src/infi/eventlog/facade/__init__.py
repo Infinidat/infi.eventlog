@@ -125,14 +125,12 @@ class EventLog(object):
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
         flags |= EvtQueryReverseDirection if reversed else EvtQueryForwardDirection
         with self.query_context(channel_name, query, flags) as query_handle:
-            while True:
-                with self.next_event_handle_context(query_handle) as event_handle:
-                    if event_handle is None:
-                        break
-                    with self.event_render_context(EvtRenderContextUser) as render_handle:
-                        pass
-                    with self.event_render_context(EvtRenderContextSystem) as render_handle:
-                        pass
+            with self.event_render_context(EvtRenderContextUser) as user_content:
+                with self.event_render_context(EvtRenderContextSystem) as system_context:
+                    while True:
+                        with self.next_event_handle_context(query_handle) as event_handle:
+                            if event_handle is None:
+                                break
 
 class LocalEventLog(EventLog):
     def __init__(self):
