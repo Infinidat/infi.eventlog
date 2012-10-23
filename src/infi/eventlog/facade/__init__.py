@@ -10,7 +10,7 @@ def get_c_api_module():
 	from os import name
 	from mock import Mock
 	is_windows = name == "nt"
-	return import_string("infi.eventlog.c_api") if is_windows else Mock()
+	return import_string("infi.eventlog.c_api" if is_windows else "infi.eventlog.c_api.mock")
 
 c_api = get_c_api_module()
 
@@ -39,7 +39,7 @@ class EventLog(object):
 	@contextmanager
 	def open_channel_context(self, channel_name):
 		with self._session.open_context() as session_handle:
-			evt_handle = c_api.EvtLogOpen(session_handle, channel_name, 0)
+			evt_handle = c_api.EvtOpenLog(session_handle, channel_name, 0)
 		try:
 			yield evt_handle
 		finally:
@@ -51,6 +51,7 @@ class EventLog(object):
 			while True:
 				try:
 					_, buffer, buffer_used = c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH)
+					yield buffer.value
 				except c_api.WindowsException, error:
 					if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
 						raise
