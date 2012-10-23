@@ -17,7 +17,6 @@ MAX_LENGTH = 256
 ERROR_NO_MORE_ITEMS = 259
 
 open_handles = dict()
-handles_data = dict()
 max_handle_id = 1
 available_channel_names = [u"System", u"Application"]
 
@@ -34,12 +33,18 @@ class Channel(object):
         self.name = name
 
 class AvailableChannelsEnum(object):
+    def __init__(self):
+        super(AvailableChannelsEnum, self).__init__()
+        self.items = list(available_channel_names)
+
+class Event(object):
     pass
 
 class QueryEnum(object):
     def __init__(self, name):
         super(QueryEnum, self).__init__()
-        
+        self.items = [Event() for i in range(10)]
+
 def get_new_handle():
     global max_handle_id
     handle = max_handle_id
@@ -61,17 +66,15 @@ def EvtOpenChannelEnum(session, flags):
     assert session is None
     handle = get_new_handle()
     open_handles[handle] = AvailableChannelsEnum()
-    handles_data[handle] = list(available_channel_names)
     return handle
 
 def EvtNextChannelPath(handle, buffer_size, buffer, buffer_used_size):
     assert handle in open_handles
     value = open_handles[handle]
     assert isinstance(value, AvailableChannelsEnum)
-    if not handles_data[handle]:
+    if not value.items:
         raise WindowsException(ERROR_NO_MORE_ITEMS)
-    item = handles_data[handle].pop()
-    buffer.value = item
+    buffer.value = value.items.pop()
     return 1
 
 def EvtQuery(session, path, query, flags):
@@ -83,3 +86,17 @@ def EvtQuery(session, path, query, flags):
     handle = get_new_handle()
     open_handles[handle] = QueryEnum(path)
     return handle
+
+def EvtNext(result_set, array_size, array, timeout, flags, returned):
+    value = open_handles[result_set]
+    assert isinstance(value, QueryEnum)
+    assert array_size == 1
+    assert timeout == 0
+    assert flags == 0
+    if not value.items:
+        raise WindowsException(ERROR_NO_MORE_ITEMS)
+    handle = get_new_handle()
+    event = value.items.pop()
+    open_handles[handle] = event
+    array._obj.value = handle
+    return 1

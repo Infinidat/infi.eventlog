@@ -121,3 +121,21 @@ class EvtQuery(EventLogFunction):
                 (LPCWSTR, infi.cwrap.IN, "Query"),
                 (DWORD, infi.cwrap.IN, "Flags"),
                )
+
+class EvtNext(EventLogFunction):
+    return_value = BOOL
+
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_bool()
+
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "ResultSet"),
+                (DWORD, infi.cwrap.IN, "EventArraySize"),
+                (POINTER(EVT_HANDLE), infi.cwrap.IN_OUT, "EventArray"),
+                (DWORD, infi.cwrap.IN, "Timeout"),
+                (DWORD, infi.cwrap.IN, "Flags"),
+                (PDWORD, infi.cwrap.IN_OUT, "Returned"),
+               )

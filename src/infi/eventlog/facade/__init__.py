@@ -13,6 +13,8 @@ EvtQueryTolerateQueryErrors   = 0x1000
 EvtOpenChannelPath   = 0x1
 EvtOpenFilePath      = 0x2 
 
+INFINITE = 2147483647
+
 def get_c_api_module():
     from brownie.importing import import_string
     from os import name
@@ -84,6 +86,24 @@ class EventLog(object):
             finally:
                 c_api.EvtClose(evt_handle)
 
+    @contextmanager
+    def next_event_handle_context(self, query_handle):
+        event_handle = c_api.EVT_HANDLE()
+        returned = c_api.DWORD()
+        try:
+            c_api.EvtNext(query_handle, 1,
+                          c_api.ctypes.byref(event_handle),
+                          0, 0, c_api.ctypes.byref(returned))
+        except c_api.WindowsException, error:
+            if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
+                raise
+            yield
+            return
+        try:
+            yield event_handle
+        finally:
+            c_api.EvtClose(event_handle.value)
+
     def event_query(self, channel_name, query="*", reversed=False):
         """:returns: a generator for events, from oldest to newest.
         Use reserved=True to get events in reversed order (newest to oldest)
@@ -93,8 +113,11 @@ class EventLog(object):
         flags = 0
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
         flags |= EvtQueryReverseDirection if reversed else EvtQueryForwardDirection
-        with self.query_context(channel_name, query, flags):
-            pass
+        with self.query_context(channel_name, query, flags) as query_handle:
+            while True:
+                with self.next_event_handle_context(query_handle) as event_handle:
+                    if event_handle is None:
+                        break
 
 class LocalEventLog(EventLog):
     def __init__(self):
