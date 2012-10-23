@@ -108,11 +108,7 @@ class EventLog(object):
             c_api.EvtClose(event_handle.value)
 
     @contextmanager
-    def event_render_context(self):
-        flags = 0
-        flags |= EvtRenderContextSystem
-        flags |= EvtRenderContextUser
-
+    def event_render_context(self, flags):
         render_handle = c_api.EvtCreateRenderContext(0, None, flags)
         try:
             yield render_handle
@@ -129,11 +125,14 @@ class EventLog(object):
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
         flags |= EvtQueryReverseDirection if reversed else EvtQueryForwardDirection
         with self.query_context(channel_name, query, flags) as query_handle:
-            with self.event_render_context() as render_handle:
-                while True:
-                    with self.next_event_handle_context(query_handle) as event_handle:
-                        if event_handle is None:
-                            break
+            while True:
+                with self.next_event_handle_context(query_handle) as event_handle:
+                    if event_handle is None:
+                        break
+                    with self.event_render_context(EvtRenderContextUser) as render_handle:
+                        pass
+                    with self.event_render_context(EvtRenderContextSystem) as render_handle:
+                        pass
 
 class LocalEventLog(EventLog):
     def __init__(self):
