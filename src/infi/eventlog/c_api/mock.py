@@ -110,6 +110,6 @@ def EvtCreateRenderContext(values_path_count, values_paths, flags):
     return handle
 
 def EvtRender(context, fragment, flags, buffer_size, buffer, buffer_used_size, property_count):
-    assert context in open_handles
+    assert context in open_handles.keys() + [None]
     assert fragment.value in open_handles
     return 1
