@@ -1,10 +1,14 @@
 Overview
 ========
-This repository is just a skeleton we use for projects.
+A simple utility for parsing Windows Event Log.
 
 Usage
 -----
-Nothing to use here.
+
+    from infi.eventlog import LocalEventLog
+    eventlog = LocalEventLog()
+    event = eventlog.event_query().next()
+    print event
 
 Checking out the code
 =====================
