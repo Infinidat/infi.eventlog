@@ -33,64 +33,80 @@ class EventLogFunction(infi.cwrap.WrappedFunction):
 
     @classmethod
     def get_errcheck(cls):
-    	# return infi.cwrap.errcheck_zero()
+        # return infi.cwrap.errcheck_zero()
         return infi.cwrap.errcheck_nonzero()
 
     @classmethod
     def get_library_name(cls):
-    	return "Wevtapi.dll"
+        return "Wevtapi.dll"
 
 
 class EvtOpenLog(EventLogFunction):
-	return_value = EVT_HANDLE
+    return_value = EVT_HANDLE
 
-	@classmethod
-	def get_errcheck(cls):
-		return infi.wioctl.api.errcheck_invalid_handle()
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_invalid_handle()
 
-	@classmethod
-	def get_parameters(cls):
-		return (
-			    (EVT_HANDLE, infi.cwrap.IN, "Session"),
-			    (LPCWSTR, infi.cwrap.IN, "Path"),
-			    (DWORD, infi.cwrap.IN, "Flags"),
-			   )
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "Session"),
+                (LPCWSTR, infi.cwrap.IN, "Path"),
+                (DWORD, infi.cwrap.IN, "Flags"),
+               )
 
 class EvtClose(EventLogFunction):
-	return_value = BOOL
+    return_value = BOOL
 
-	@classmethod
-	def get_parameters(cls):
-		return (
+    @classmethod
+    def get_parameters(cls):
+        return (
                 (EVT_HANDLE, infi.cwrap.IN, "Object"),
-			   )
+               )
 
 class EvtOpenChannelEnum(EventLogFunction):
-	return_value = EVT_HANDLE
+    return_value = EVT_HANDLE
 
-	@classmethod
-	def get_errcheck(cls):
-		return infi.wioctl.api.errcheck_invalid_handle()
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_invalid_handle()
 
-	@classmethod
-	def get_parameters(cls):
-		return (
-			    (EVT_HANDLE, infi.cwrap.IN, "Session"),
-			    (DWORD, infi.cwrap.IN, "Flags"),
-			   )
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "Session"),
+                (DWORD, infi.cwrap.IN, "Flags"),
+               )
 
 class EvtNextChannelPath(EventLogFunction):
-	return_value = BOOL
+    return_value = BOOL
 
-	@classmethod
-	def get_errcheck(cls):
-		return infi.wioctl.api.errcheck_bool()
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_bool()
 
-	@classmethod
-	def get_parameters(cls):
-		return (
-			    (EVT_HANDLE, infi.cwrap.IN, "ChannelEnum"),
-			    (DWORD, infi.cwrap.IN, "ChannelPathBufferSize"),
-			    (LPWSTR, infi.cwrap.IN_OUT, "ChannelPathBuffer"),
-			    (PDWORD, infi.cwrap.IN_OUT, "ChannelPathBufferUsed"),
-			   )
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "ChannelEnum"),
+                (DWORD, infi.cwrap.IN, "ChannelPathBufferSize"),
+                (LPWSTR, infi.cwrap.IN_OUT, "ChannelPathBuffer"),
+                (PDWORD, infi.cwrap.IN_OUT, "ChannelPathBufferUsed"),
+               )
+
+class EvtQuery(EventLogFunction):
+    return_value = EVT_HANDLE
+
+    @classmethod
+    def get_errcheck(cls):
+        return infi.wioctl.api.errcheck_invalid_handle()
+
+    @classmethod
+    def get_parameters(cls):
+        return (
+                (EVT_HANDLE, infi.cwrap.IN, "Session"),
+                (LPCWSTR, infi.cwrap.IN, "Path"),
+                (LPCWSTR, infi.cwrap.IN, "Query"),
+                (DWORD, infi.cwrap.IN, "Flags"),
+               )

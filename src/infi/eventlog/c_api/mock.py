@@ -1,4 +1,4 @@
-
+import os
 import ctypes
 import infi.cwrap
 
@@ -19,7 +19,7 @@ ERROR_NO_MORE_ITEMS = 259
 open_handles = dict()
 handles_data = dict()
 max_handle_id = 1
-available_channel_names = ["System", "Application"]
+available_channel_names = [u"System", u"Application"]
 
 class WindowsException(Exception):
     def __init__(self, winerror):
@@ -36,6 +36,10 @@ class Channel(object):
 class AvailableChannelsEnum(object):
     pass
 
+class QueryEnum(object):
+    def __init__(self, name):
+        super(QueryEnum, self).__init__()
+        
 def get_new_handle():
     global max_handle_id
     handle = max_handle_id
@@ -67,4 +71,15 @@ def EvtNextChannelPath(handle, buffer_size, buffer, buffer_used_size):
     if not handles_data[handle]:
         raise WindowsException(ERROR_NO_MORE_ITEMS)
     item = handles_data[handle].pop()
-    return 1, ctypes.create_unicode_buffer(item), len(item)
+    buffer.value = item
+    return 1
+
+def EvtQuery(session, path, query, flags):
+    assert session is None
+    if flags & 1:
+        assert path in available_channel_names
+    elif flags & 2:
+        assert os.path.exists(path)
+    handle = get_new_handle()
+    open_handles[handle] = QueryEnum(path)
+    return handle
