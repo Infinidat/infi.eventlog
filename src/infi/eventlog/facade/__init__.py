@@ -146,7 +146,7 @@ class EventLog(object):
                 with self.next_event_handle_context(query_handle) as event_handle:
                     if event_handle is None:
                         break
-                    yield parse(self.render_event(event_handle))
+                    yield parse(self.render_event(event_handle).encode("utf-8"))
 
 class LocalEventLog(EventLog):
     def __init__(self):
