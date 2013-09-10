@@ -147,7 +147,8 @@ class EventLog(object):
                     if event_handle is None:
                         break
                     event_data = self.render_event(event_handle).encode("utf-8")
-                    ascii_data = ''.join([char for char in event_data if ord(char) < 128])
+                    is_ascii = lambda c: ord(char) in range(32, 128)
+                    ascii_data = ''.join([char if is_ascii(char) else hex(ord(char)) for char in event_data])
                     yield parse(ascii_data)
 
 class LocalEventLog(EventLog):
