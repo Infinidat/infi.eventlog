@@ -58,3 +58,4 @@ src/infi/eventlog/__version__.py
 .cache
 .cache
 eggs
+parts
