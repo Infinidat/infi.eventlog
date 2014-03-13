@@ -56,3 +56,6 @@ buildout.in
 src/infi/eventlog/__version__.py
 .codeintel
 .cache
+.cache
+eggs
+parts
