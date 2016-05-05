@@ -1,4 +1,3 @@
-from unittest import SkipTest
 from infi import unittest
 from infi.eventlog import LocalEventLog
 
