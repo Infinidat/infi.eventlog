@@ -1,7 +1,5 @@
 import os
 import ctypes
-import infi.cwrap
-import textwrap
 
 HANDLE = ctypes.c_void_p
 EVT_HANDLE = HANDLE
@@ -63,7 +61,7 @@ class RenderContext(object):
 def get_new_handle():
     global max_handle_id
     handle = max_handle_id
-    max_handle_id +=1 
+    max_handle_id += 1
     return handle
 
 def EvtOpenLog(session, path, flags):

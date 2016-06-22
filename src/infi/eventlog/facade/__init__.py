@@ -1,6 +1,5 @@
 
 from infi.pyutils.contexts import contextmanager
-from infi.exceptools import InfiException
 from logging import getLogger
 from xmltodict import parse
 
@@ -10,9 +9,9 @@ EvtQueryChannelPath           = 0x1
 EvtQueryFilePath              = 0x2
 EvtQueryForwardDirection      = 0x100
 EvtQueryReverseDirection      = 0x200
-EvtQueryTolerateQueryErrors   = 0x1000 
+EvtQueryTolerateQueryErrors   = 0x1000
 EvtOpenChannelPath   = 0x1
-EvtOpenFilePath      = 0x2 
+EvtOpenFilePath      = 0x2
 EvtRenderContextValues   = 0
 EvtRenderContextSystem   = 1
 EvtRenderContextUser     = 2
@@ -26,13 +25,12 @@ MAX_BUFFER_SIZE = 2**16
 def get_c_api_module():
     from brownie.importing import import_string
     from os import name
-    from mock import Mock
     is_windows = name == "nt"
     return import_string("infi.eventlog.c_api" if is_windows else "infi.eventlog.c_api.mock")
 
 c_api = get_c_api_module()
 
-class EventLogException(InfiException):
+class EventLogException(Exception):
     pass
 
 class Session(object):
@@ -44,12 +42,12 @@ class LocalSession(Session):
     @contextmanager
     def open_context(self):
         yield None
-        
+
 class RemoteSession(Session):
     def __init__(self, computername, username, password, domain):
         raise NotImplementedError()
 
-class EventLog(object):    
+class EventLog(object):
     def __init__(self, session):
         super(EventLog, self).__init__()
         self._session =  session
@@ -61,7 +59,7 @@ class EventLog(object):
         channels = list(self.get_available_channels())
         flags = 0
         flags |= EvtOpenChannelPath if channel_name in channels else EvtOpenFilePath
-        
+
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtOpenLog(session_handle, channel_name, flags)
         try:
@@ -76,7 +74,7 @@ class EventLog(object):
                 try:
                     buffer = c_api.ctypes.create_unicode_buffer(c_api.MAX_LENGTH)
                     buffer_used = c_api.DWORD()
-                    c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer, 
+                    c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer,
                                              c_api.ctypes.byref(buffer_used))
                     yield buffer.value
                 except c_api.WindowsException, error:
@@ -131,7 +129,7 @@ class EventLog(object):
                   c_api.ctypes.byref(buffer_used),
                   c_api.ctypes.byref(property_count))
         return buffer.value
-                  
+
     def event_query(self, channel_name, query="*", reversed=False):
         """:returns: a generator for events, from oldest to newest.
         Use reserved=True to get events in reversed order (newest to oldest)
