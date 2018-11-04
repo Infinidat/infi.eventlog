@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 
 from infi.pyutils.contexts import contextmanager
 from logging import getLogger
@@ -55,7 +56,6 @@ class EventLog(object):
 
     @contextmanager
     def open_channel_context(self, channel_name):
-        channel_name = unicode(channel_name)
         channels = list(self.get_available_channels())
         flags = 0
         flags |= EvtOpenChannelPath if channel_name in channels else EvtOpenFilePath
@@ -77,14 +77,13 @@ class EventLog(object):
                     c_api.EvtNextChannelPath(evt_handle, c_api.MAX_LENGTH, buffer,
                                              c_api.ctypes.byref(buffer_used))
                     yield buffer.value
-                except c_api.WindowsException, error:
+                except c_api.WindowsException as error:
                     if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
                         raise
                     break
 
     @contextmanager
     def query_context(self, channel_name, query, flags):
-        channel_name = unicode(channel_name)
         with self._session.open_context() as session_handle:
             evt_handle = c_api.EvtQuery(session_handle, channel_name, query, flags)
             try:
@@ -100,7 +99,7 @@ class EventLog(object):
             c_api.EvtNext(query_handle, 1,
                           c_api.ctypes.byref(event_handle),
                           0, 0, c_api.ctypes.byref(returned))
-        except c_api.WindowsException, error:
+        except c_api.WindowsException as error:
             if error.winerror != c_api.ERROR_NO_MORE_ITEMS:
                 raise
             yield
@@ -119,22 +118,23 @@ class EventLog(object):
     #         c_api.EvtClose(render_handle)
 
     def render_event(self, event_handle):
-    	flags = EvtRenderEventXml
+        flags = EvtRenderEventXml
         buffer = c_api.ctypes.create_unicode_buffer(MAX_BUFFER_SIZE)
         buffer_size = MAX_BUFFER_SIZE*c_api.ctypes.sizeof(c_api.ctypes.c_wchar)
         buffer_used = c_api.DWORD()
         property_count = c_api.DWORD()
         c_api.EvtRender(None, event_handle, flags,
-                  buffer_size, c_api.ctypes.byref(buffer),
-                  c_api.ctypes.byref(buffer_used),
-                  c_api.ctypes.byref(property_count))
+                        buffer_size, c_api.ctypes.byref(buffer),
+                        c_api.ctypes.byref(buffer_used),
+                        c_api.ctypes.byref(property_count))
         return buffer.value
 
     def event_query(self, channel_name, query="*", reversed=False):
         """:returns: a generator for events, from oldest to newest.
         Use reserved=True to get events in reversed order (newest to oldest)
         """
-        channel_name = unicode(channel_name)
+        def is_ascii(char):
+            return ord(char) in range(32, 128)
         channels = list(self.get_available_channels())
         flags = 0
         flags |= EvtQueryChannelPath if channel_name in channels else EvtQueryFilePath
@@ -144,8 +144,7 @@ class EventLog(object):
                 with self.next_event_handle_context(query_handle) as event_handle:
                     if event_handle is None:
                         break
-                    event_data = self.render_event(event_handle).encode("utf-8")
-                    is_ascii = lambda c: ord(char) in range(32, 128)
+                    event_data = self.render_event(event_handle)
                     ascii_data = ''.join([char if is_ascii(char) else hex(ord(char)) for char in event_data])
                     yield parse(ascii_data)
 

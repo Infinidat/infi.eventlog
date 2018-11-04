@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import ctypes
 
@@ -17,9 +19,9 @@ ERROR_NO_MORE_ITEMS = 259
 
 open_handles = dict()
 max_handle_id = 1
-available_channel_names = [u"System", u"Application"]
+available_channel_names = ["System", "Application"]
 
-SAMPLE_XML = u"""<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'>
+SAMPLE_XML = """<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'>
 <System><Provider Name='Service Control Manager' Guid='{555908d1-a6d7-4695-8e1e-2
 6931d2012f4}' EventSourceName='Service Control Manager'/><EventID Qualifiers='16
 384'>7036</EventID><Version>0</Version><Level>4</Level><Task>0</Task><Opcode>0</
@@ -120,7 +122,7 @@ def EvtNext(result_set, array_size, array, timeout, flags, returned):
 #     return handle
 
 def EvtRender(context, fragment, flags, buffer_size, buffer, buffer_used_size, property_count):
-    assert context in open_handles.keys() + [None]
+    assert context in list(open_handles.keys()) + [None]
     assert fragment.value in open_handles
-    buffer._obj.value = unicode(SAMPLE_XML)
+    buffer._obj.value = SAMPLE_XML
     return 1
