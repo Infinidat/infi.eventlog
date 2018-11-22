@@ -24,10 +24,10 @@ INFINITE = 2147483647
 MAX_BUFFER_SIZE = 2**16
 
 def get_c_api_module():
-    from brownie.importing import import_string
+    from importlib import import_module
     from os import name
     is_windows = name == "nt"
-    return import_string("infi.eventlog.c_api" if is_windows else "infi.eventlog.c_api.mock")
+    return import_module("infi.eventlog.c_api" if is_windows else "infi.eventlog.c_api.mock")
 
 c_api = get_c_api_module()
 
